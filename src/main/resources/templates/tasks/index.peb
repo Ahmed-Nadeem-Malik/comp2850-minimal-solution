@@ -1,8 +1,8 @@
-{% extends "_layout/base.peb" %}
+    {% extends "_layout/base.peb" %}
 
-{% block title %}Task List | COMP2850{% endblock %}
+        {% block title %}Task List | COMP2850{% endblock %}
 
-{% block content %}
+    {% block content %}
 <article>
     <header>
         <h1>Task Manager</h1>
@@ -17,7 +17,7 @@
     </header>
 
     {# Error Summary - Week 8 Lab 2 #}
-    {% if error %}
+        {% if error %}
     <div role="alert" aria-live="assertive" class="error-summary" id="error-summary" tabindex="-1">
         <h2>There is a problem</h2>
         <ul>
@@ -87,7 +87,7 @@
 
         <div id="task-area">
             {% include "tasks/_list.peb" %}
-            {% include "tasks/_pager.peb" %}
+        {% include "tasks/_pager.peb" %}
         </div>
     </section>
 </article>
