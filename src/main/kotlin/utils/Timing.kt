@@ -1,9 +1,7 @@
 package utils
 
-import io.ktor.http.Cookie
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
 import isHtmxRequest
@@ -31,11 +29,10 @@ suspend fun <T> ApplicationCall.timed(
         result
     } catch (e: RuntimeException) {
         val duration = System.currentTimeMillis() - started
-        val (step, defaultStatus) =
-            when (e) {
-                is IllegalArgumentException -> "client_error" to HttpStatusCode.BadRequest.value
-                else -> "server_error" to HttpStatusCode.InternalServerError.value
-            }
+        val (step, defaultStatus) = when (e) {
+            is IllegalArgumentException -> "client_error" to HttpStatusCode.BadRequest.value
+            else -> "server_error" to HttpStatusCode.InternalServerError.value
+        }
 
         Logger.write(
             sessionId = sid,
@@ -65,10 +62,9 @@ fun ApplicationCall.sessionCode(): String = attributes[SidKey]
 
 fun ApplicationCall.requestId(): String = attributes[ReqIdKey]
 
-private fun ApplicationCall.ensureSession(): SessionData =
-    sessions.get<SessionData>() ?: SessionData().also {
-        sessions.set(it)
-    }
+private fun ApplicationCall.ensureSession(): SessionData = sessions.get<SessionData>() ?: SessionData().also {
+    sessions.set(it)
+}
 
 private fun ApplicationCall.ensureRequestId(): String {
     val existing = attributes.getOrNull(ReqIdKey)

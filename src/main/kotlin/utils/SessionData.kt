@@ -1,6 +1,6 @@
 package utils
 
-import java.util.UUID
+import java.util.*
 
 /**
  * Session data for tracking requests (privacy-safe).

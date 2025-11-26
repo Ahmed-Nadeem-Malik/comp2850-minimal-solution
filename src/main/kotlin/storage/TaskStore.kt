@@ -31,10 +31,7 @@ class TaskStore(
 ) {
     companion object {
         private val CSV_FORMAT =
-            CSVFormat.DEFAULT
-                .builder()
-                .setHeader("id", "title", "completed", "created_at")
-                .setSkipHeaderRecord(true)
+            CSVFormat.DEFAULT.builder().setHeader("id", "title", "completed", "created_at").setSkipHeaderRecord(true)
                 .build()
 
         private const val EMPTY_FILE_SIZE = 0L

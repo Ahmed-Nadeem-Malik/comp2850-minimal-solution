@@ -1,6 +1,6 @@
 package utils
 
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import java.io.File
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -31,18 +31,16 @@ data class LogEntry(
 
 // Week 9: writes interaction metrics for Task 1 instrumentation
 object Logger {
-    private val out =
-        File("data/metrics.csv").apply {
-            parentFile?.mkdirs()
-            if (!exists()) writeText("ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode\n")
-        }
+    private val out = File("data/metrics.csv").apply {
+        parentFile?.mkdirs()
+        if (!exists()) writeText("ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode\n")
+    }
 
     @Synchronized
     fun write(entry: LogEntry) {
         val ts = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         out.appendText(
-            "$ts,${entry.sessionId},${entry.requestId},${entry.taskCode},${entry.step}," +
-                "${entry.outcome},${entry.durationMs},${entry.statusCode},${entry.jsMode}\n",
+            "$ts,${entry.sessionId},${entry.requestId},${entry.taskCode},${entry.step}," + "${entry.outcome},${entry.durationMs},${entry.statusCode},${entry.jsMode}\n",
         )
     }
 

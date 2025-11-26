@@ -2,7 +2,7 @@ package model
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 
 /**
  * Task data model.
@@ -48,23 +48,19 @@ data class Task(
          * @param title Title to validate
          * @return ValidationResult.Success or ValidationResult.Error(message)
          */
-        fun validate(title: String): ValidationResult =
-            when {
-                title.isBlank() ->
-                    ValidationResult.Error("Title is required. Please enter a task description.")
+        fun validate(title: String): ValidationResult = when {
+            title.isBlank() -> ValidationResult.Error("Title is required. Please enter a task description.")
 
-                title.length < MIN_TITLE_LENGTH ->
-                    ValidationResult.Error(
-                        "Title must be at least $MIN_TITLE_LENGTH characters. Currently: ${title.length} characters.",
-                    )
+            title.length < MIN_TITLE_LENGTH -> ValidationResult.Error(
+                "Title must be at least $MIN_TITLE_LENGTH characters. Currently: ${title.length} characters.",
+            )
 
-                title.length > MAX_TITLE_LENGTH ->
-                    ValidationResult.Error(
-                        "Title must be less than $MAX_TITLE_LENGTH characters. Currently: ${title.length} characters.",
-                    )
+            title.length > MAX_TITLE_LENGTH -> ValidationResult.Error(
+                "Title must be less than $MAX_TITLE_LENGTH characters. Currently: ${title.length} characters.",
+            )
 
-                else -> ValidationResult.Success
-            }
+            else -> ValidationResult.Success
+        }
     }
 
     /**
@@ -97,14 +93,13 @@ data class Task(
      *
      * @return Map suitable for Pebble template context
      */
-    fun toPebbleContext(): Map<String, Any> =
-        mapOf(
-            "id" to id,
-            "title" to title,
-            "completed" to completed,
-            "createdAt" to createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-            "createdAtISO" to createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-        )
+    fun toPebbleContext(): Map<String, Any> = mapOf(
+        "id" to id,
+        "title" to title,
+        "completed" to completed,
+        "createdAt" to createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        "createdAtISO" to createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+    )
 }
 
 /**

@@ -1,18 +1,10 @@
 package routes
 
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.encodeURLParameter
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
-import io.ktor.server.request.receiveParameters
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import isHtmxRequest
 import model.Task
 import model.ValidationResult
@@ -97,13 +89,12 @@ private suspend fun ApplicationCall.handleCreateTaskError(
     query: String,
     validation: ValidationResult.Error,
 ) {
-    val outcome =
-        when {
-            title.isBlank() -> "blank_title"
-            title.length < Task.MIN_TITLE_LENGTH -> "min_length"
-            title.length > Task.MAX_TITLE_LENGTH -> "max_length"
-            else -> "invalid_title"
-        }
+    val outcome = when {
+        title.isBlank() -> "blank_title"
+        title.length < Task.MIN_TITLE_LENGTH -> "min_length"
+        title.length > Task.MAX_TITLE_LENGTH -> "max_length"
+        else -> "invalid_title"
+    }
     logValidationError("T3_add", outcome)
     if (isHtmxRequest()) {
         val paginated = paginateTasks(store, query, 1)
@@ -125,10 +116,9 @@ private suspend fun ApplicationCall.handleCreateTaskSuccess(
 
     if (isHtmxRequest()) {
         val paginated = paginateTasks(store, query, 1)
-        val statusHtml =
-            messageStatusFragment(
-                """Task "${task.title}" added successfully.""",
-            )
+        val statusHtml = messageStatusFragment(
+            """Task "${task.title}" added successfully.""",
+        )
         respondTaskArea(paginated, statusHtml, htmxTrigger = "task-added")
     } else {
         response.headers.append("Location", redirectPath(query, 1))
@@ -141,11 +131,10 @@ private suspend fun ApplicationCall.handleCreateTaskSuccess(
  */
 private suspend fun ApplicationCall.handleToggleTask(store: TaskStore) {
     timed("T2_edit", jsMode()) {
-        val id =
-            parameters["id"] ?: run {
-                respond(HttpStatusCode.BadRequest, "Missing task ID")
-                return@timed
-            }
+        val id = parameters["id"] ?: run {
+            respond(HttpStatusCode.BadRequest, "Missing task ID")
+            return@timed
+        }
 
         val updated = store.toggleComplete(id)
 
@@ -155,17 +144,15 @@ private suspend fun ApplicationCall.handleToggleTask(store: TaskStore) {
         }
 
         if (isHtmxRequest()) {
-            val taskHtml =
-                renderTemplate(
-                    "tasks/_item.peb",
-                    mapOf("task" to updated.toPebbleContext()),
-                )
+            val taskHtml = renderTemplate(
+                "tasks/_item.peb",
+                mapOf("task" to updated.toPebbleContext()),
+            )
 
             val statusText = if (updated.completed) "marked complete" else "marked incomplete"
-            val statusHtml =
-                messageStatusFragment(
-                    """Task "${updated.title}" $statusText.""",
-                )
+            val statusHtml = messageStatusFragment(
+                """Task "${updated.title}" $statusText.""",
+            )
 
             respondText(taskHtml + "\n" + statusHtml, ContentType.Text.Html)
         } else {
@@ -180,11 +167,10 @@ private suspend fun ApplicationCall.handleToggleTask(store: TaskStore) {
  */
 private suspend fun ApplicationCall.handleDeleteTask(store: TaskStore) {
     timed("T4_delete", jsMode()) {
-        val id =
-            parameters["id"] ?: run {
-                respond(HttpStatusCode.BadRequest, "Missing task ID")
-                return@timed
-            }
+        val id = parameters["id"] ?: run {
+            respond(HttpStatusCode.BadRequest, "Missing task ID")
+            return@timed
+        }
 
         val task = store.getById(id)
         val deleted = store.delete(id)
@@ -195,10 +181,9 @@ private suspend fun ApplicationCall.handleDeleteTask(store: TaskStore) {
         }
 
         if (isHtmxRequest()) {
-            val statusHtml =
-                messageStatusFragment(
-                    """Task "${task?.title ?: "Unknown"}" deleted.""",
-                )
+            val statusHtml = messageStatusFragment(
+                """Task "${task?.title ?: "Unknown"}" deleted.""",
+            )
             respondText(statusHtml, ContentType.Text.Html)
         } else {
             response.headers.append("Location", "/tasks")
@@ -231,24 +216,19 @@ private fun paginateTasks(
     query: String,
     page: Int,
 ): PaginatedTasks {
-    val tasks =
-        (if (query.isBlank()) store.getAll() else store.search(query))
-            .map { it.toPebbleContext() }
+    val tasks = (if (query.isBlank()) store.getAll() else store.search(query)).map { it.toPebbleContext() }
     val pageData = Page.paginate(tasks, currentPage = page, pageSize = PAGE_SIZE)
 
     // Create context with both flat keys (for backwards compatibility) and nested page object (for templates)
-    val context =
-        pageData.toPebbleContext("tasks") +
-            mapOf(
-                "query" to query,
-                "page" to
-                    mapOf(
-                        "items" to pageData.items,
-                        "currentPage" to pageData.currentPage,
-                        "totalPages" to pageData.totalPages,
-                        "totalItems" to pageData.totalItems,
-                    ),
-            )
+    val context = pageData.toPebbleContext("tasks") + mapOf(
+        "query" to query,
+        "page" to mapOf(
+            "items" to pageData.items,
+            "currentPage" to pageData.currentPage,
+            "totalPages" to pageData.totalPages,
+            "totalItems" to pageData.totalItems,
+        ),
+    )
     return PaginatedTasks(pageData, context)
 }
 
@@ -277,13 +257,12 @@ private suspend fun ApplicationCall.renderTaskArea(paginated: PaginatedTasks): S
 private fun filterStatusFragment(
     query: String,
     total: Int,
-): String =
-    if (query.isBlank()) {
-        """<div id="status" hx-swap-oob="true" role="status"></div>"""
-    } else {
-        val noun = if (total == 1) "task" else "tasks"
-        """<div id="status" hx-swap-oob="true" role="status">Found $total $noun matching "$query".</div>"""
-    }
+): String = if (query.isBlank()) {
+    """<div id="status" hx-swap-oob="true" role="status"></div>"""
+} else {
+    val noun = if (total == 1) "task" else "tasks"
+    """<div id="status" hx-swap-oob="true" role="status">Found $total $noun matching "$query".</div>"""
+}
 
 private fun messageStatusFragment(
     message: String,
@@ -341,10 +320,11 @@ private suspend fun ApplicationCall.handleUpdateTask(store: TaskStore) {
     if (validation is ValidationResult.Error) {
         if (isHtmxRequest()) {
             // HTMX: return edit form with error
-            val html = renderTemplate("tasks/_edit.peb", mapOf(
-                "task" to task.toPebbleContext(),
-                "error" to validation.message
-            ))
+            val html = renderTemplate(
+                "tasks/_edit.peb", mapOf(
+                    "task" to task.toPebbleContext(), "error" to validation.message
+                )
+            )
             respondText(html, ContentType.Text.Html)
         } else {
             // No-JS: redirect back (would need error handling)

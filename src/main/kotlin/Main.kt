@@ -1,21 +1,19 @@
-import io.ktor.server.application.*
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.sessions.*
-import io.ktor.server.routing.*
-import io.ktor.server.http.content.staticResources
-import io.ktor.server.plugins.callloging.CallLogging
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.httpMethod
-import io.ktor.server.request.path
-import io.ktor.server.response.respondText
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.ContentType
-import io.ktor.util.AttributeKey
-import io.pebbletemplates.pebble.PebbleEngine
-import routes.configureTaskRoutes
-import routes.configureHealthCheck
 // import routes.configureEditRoutes // Week 7
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
+import io.ktor.util.*
+import io.pebbletemplates.pebble.PebbleEngine
+import routes.configureHealthCheck
+import routes.configureTaskRoutes
 import utils.ReqIdKey
 import utils.SessionData
 import utils.generateRequestId
@@ -77,17 +75,14 @@ fun Application.configureLogging() {
  * - Full pages in root or feature subdirectories
  */
 fun Application.configureTemplating() {
-    val pebbleEngine =
-        PebbleEngine
-            .Builder()
-            .loader(
-                io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
-                    prefix = "templates/"
-                },
-            ).autoEscaping(true) // XSS protection via auto-escaping
-            .cacheActive(false) // Disable cache in dev for hot reload
-            .strictVariables(false) // Allow undefined variables (fail gracefully)
-            .build()
+    val pebbleEngine = PebbleEngine.Builder().loader(
+        io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
+            prefix = "templates/"
+        },
+    ).autoEscaping(true) // XSS protection via auto-escaping
+        .cacheActive(false) // Disable cache in dev for hot reload
+        .strictVariables(false) // Allow undefined variables (fail gracefully)
+        .build()
 
     environment.monitor.subscribe(ApplicationStarted) { app ->
         app.log.info("✓ Pebble templates loaded from resources/templates/")
@@ -130,12 +125,10 @@ suspend fun ApplicationCall.renderTemplate(
 
     // Add global context available to all templates
     val sessionData = sessions.get<SessionData>()
-    val enrichedContext =
-        context +
-            mapOf(
-                "sessionId" to (sessionData?.id ?: "anonymous"),
-                "isHtmx" to isHtmxRequest(),
-            )
+    val enrichedContext = context + mapOf(
+        "sessionId" to (sessionData?.id ?: "anonymous"),
+        "isHtmx" to isHtmxRequest(),
+    )
 
     template.evaluate(writer, enrichedContext)
     return writer.toString()
@@ -185,8 +178,7 @@ fun Application.configureSessions() {
  * HTML template for 404 error page.
  * Extracted as constant for code organization (detekt LongMethod compliance).
  */
-private const val ERROR_404_HTML =
-    """
+private const val ERROR_404_HTML = """
     <!DOCTYPE html>
     <html lang="en">
     <head>

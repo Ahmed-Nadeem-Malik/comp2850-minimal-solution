@@ -90,12 +90,11 @@ data class Page<T>(
             val startIndex = (validPage - 1) * pageSize
             val endIndex = minOf(startIndex + pageSize, totalItems)
 
-            val pageItems =
-                if (startIndex < totalItems) {
-                    items.subList(startIndex, endIndex)
-                } else {
-                    emptyList()
-                }
+            val pageItems = if (startIndex < totalItems) {
+                items.subList(startIndex, endIndex)
+            } else {
+                emptyList()
+            }
 
             return Page(
                 items = pageItems,
@@ -110,25 +109,23 @@ data class Page<T>(
     /**
      * Convert page to Pebble template context.
      */
-    fun toPebbleContext(itemsKey: String = "items"): Map<String, Any> =
-        mapOf(
-            itemsKey to items,
-            "currentPage" to currentPage,
-            "totalPages" to totalPages,
-            "totalItems" to totalItems,
-            "pageSize" to pageSize,
-            "hasPrevious" to hasPrevious,
-            "hasNext" to hasNext,
-            "previousPage" to previousPage,
-            "nextPage" to nextPage,
-            "pageNumbers" to
-                pageNumbers().map {
-                    when (it) {
-                        is PageNumber.Number -> mapOf("type" to "number", "value" to it.value)
-                        PageNumber.Ellipsis -> mapOf("type" to "ellipsis")
-                    }
-                },
-        )
+    fun toPebbleContext(itemsKey: String = "items"): Map<String, Any> = mapOf(
+        itemsKey to items,
+        "currentPage" to currentPage,
+        "totalPages" to totalPages,
+        "totalItems" to totalItems,
+        "pageSize" to pageSize,
+        "hasPrevious" to hasPrevious,
+        "hasNext" to hasNext,
+        "previousPage" to previousPage,
+        "nextPage" to nextPage,
+        "pageNumbers" to pageNumbers().map {
+            when (it) {
+                is PageNumber.Number -> mapOf("type" to "number", "value" to it.value)
+                PageNumber.Ellipsis -> mapOf("type" to "ellipsis")
+            }
+        },
+    )
 }
 
 /**
