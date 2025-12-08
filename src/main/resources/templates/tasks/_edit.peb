@@ -24,10 +24,14 @@
     {% endif %}
 
     <button type="submit">Save</button>
-    <a href="/tasks"
-       hx-get="/tasks/{{ task.id }}/view"
-       hx-target="#task-{{ task.id }}"
-       hx-swap="outerHTML"
-       role="button">Cancel</a>
+    <button type="button"
+            hx-get="/tasks/{{ task.id }}/view"
+            hx-target="#task-{{ task.id }}"
+            hx-swap="outerHTML">
+      Cancel
+    </button>
+    <noscript>
+      <p><a href="/tasks">Cancel and return to the list</a></p>
+    </noscript>
   </form>
 </li>

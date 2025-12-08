@@ -294,8 +294,8 @@ private suspend fun ApplicationCall.handleEditTask(store: TaskStore) {
         val html = renderTemplate("tasks/_edit.peb", mapOf("task" to task.toPebbleContext()))
         respondText(html, ContentType.Text.Html)
     } else {
-        // No-JS: redirect to list (would need edit mode support in index)
-        respondRedirect("/tasks")
+        val html = renderTemplate("tasks/edit_page.peb", mapOf("task" to task.toPebbleContext()))
+        respondText(html, ContentType.Text.Html)
     }
 }
 
@@ -327,8 +327,13 @@ private suspend fun ApplicationCall.handleUpdateTask(store: TaskStore) {
             )
             respondText(html, ContentType.Text.Html)
         } else {
-            // No-JS: redirect back (would need error handling)
-            respondRedirect("/tasks")
+            // No-JS: render standalone page with errors
+            val html = renderTemplate(
+                "tasks/edit_page.peb", mapOf(
+                    "task" to task.toPebbleContext(), "error" to validation.message
+                )
+            )
+            respondText(html, ContentType.Text.Html)
         }
         return
     }

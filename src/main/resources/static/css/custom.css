@@ -27,7 +27,7 @@
 
 .skip-link:focus {
     top: 0;
-    outline: 3px solid #4A90E2;
+    outline: 3px solid #1c3551;
     outline-offset: 2px;
 }
 
@@ -213,6 +213,14 @@ select:focus {
     margin: 0;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
+}
+
+.task-edit button {
+    width: 100%;
+}
+
+.task-edit button + button {
+    margin-top: 0.5rem;
 }
 
 /* ========================================

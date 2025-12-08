@@ -1,0 +1,20 @@
+{% extends "_layout/base.peb" %}
+
+{% block title %}Edit Task | COMP2850{% endblock %}
+
+{% block content %}
+<article>
+  <header>
+    <h1>Edit Task</h1>
+    <p>Update the task title and save your changes.</p>
+  </header>
+
+  <ul class="task-list">
+    {% include "tasks/_edit.peb" %}
+  </ul>
+
+  <p>
+    <a href="/tasks">Back to task list</a>
+  </p>
+</article>
+{% endblock %}
