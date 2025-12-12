@@ -291,7 +291,6 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 (Path: src/main/resources/static/css/custom.css Line Number: ~218 ):
 
-AI: Used ChatGPT codex to help with sizing for padding, font, width and margin
 
 ```kotlin
 .task - actions {
